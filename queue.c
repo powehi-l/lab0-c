@@ -46,6 +46,7 @@ bool q_insert_head(struct list_head *head, char *s)
         return false;
     }
     memcpy((void *) str, (const void *) s, strlen(s));
+    str[strlen(s)] = 0;
     // Insert newly allocated node into queue
     node->value = str;
     struct list_head *cur = &(node->list);
@@ -66,6 +67,7 @@ bool q_insert_tail(struct list_head *head, char *s)
         return false;
     }
     memcpy((void *) str, (const void *) s, strlen(s));
+    str[strlen(s)] = 0;
     // Insert newly allocated node into queue
     node->value = str;
     struct list_head *cur = &(node->list);
@@ -76,13 +78,29 @@ bool q_insert_tail(struct list_head *head, char *s)
 /* Remove an element from head of queue */
 element_t *q_remove_head(struct list_head *head, char *sp, size_t bufsize)
 {
-    return NULL;
+    if (!head || list_empty(head) || !sp)
+        return NULL;
+    struct list_head *node = head->next;
+    list_del(node);
+    element_t *s = list_entry(node, element_t, list);
+    int len = (bufsize - 1) < strlen(s->value) ? bufsize - 1 : strlen(s->value);
+    memcpy((void *) sp, (void *) s->value, len);
+    sp[len] = 0;
+    return s;
 }
 
 /* Remove an element from tail of queue */
 element_t *q_remove_tail(struct list_head *head, char *sp, size_t bufsize)
 {
-    return NULL;
+    if (!head || list_empty(head) || !sp)
+        return NULL;
+    struct list_head *node = head->prev;
+    list_del(node);
+    element_t *s = list_entry(node, element_t, list);
+    int len = (bufsize - 1) < strlen(s->value) ? bufsize - 1 : strlen(s->value);
+    memcpy((void *) sp, (void *) s->value, len);
+    sp[len] = 0;
+    return s;
 }
 
 /* Return number of elements in queue */
